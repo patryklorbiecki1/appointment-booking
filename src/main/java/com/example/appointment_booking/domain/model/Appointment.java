@@ -1,8 +1,5 @@
-package com.example.appointment_booking.domain.repository;
+package com.example.appointment_booking.domain.model;
 
-import com.example.appointment_booking.domain.model.AppointmentStatus;
-import com.example.appointment_booking.domain.model.Specialist;
-import com.example.appointment_booking.domain.model.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
