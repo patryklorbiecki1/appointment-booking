@@ -1,6 +1,9 @@
 package com.example.appointment_booking.application;
 
 import com.example.appointment_booking.config.security.JwtUtil;
+import com.example.appointment_booking.domain.exception.UsernameAlreadyExistsException;
+import com.example.appointment_booking.domain.model.Role;
+import com.example.appointment_booking.domain.model.Specialist;
 import com.example.appointment_booking.web.dto.AuthResponse;
 import com.example.appointment_booking.web.dto.LoginRequest;
 import com.example.appointment_booking.web.dto.RegisterRequest;
@@ -23,14 +26,19 @@ public class AuthService {
 
     public String register(RegisterRequest request){
         if (userRepository.findByUsername(request.getUsername()).isPresent()){
-            return "User already exists";
-            //throw new UsernameAlreadyExistsException(request.getUsername());
+            throw new UsernameAlreadyExistsException(request.getUsername());
         }
         User user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(request.getRole());
 
+        if(Role.SPECIALIST.equals(request.getRole())){
+            Specialist specialist = new Specialist();
+            specialist.setSpecialization("");
+            specialist.setUser(user);
+            user.setSpecialist(specialist);
+        }
         userRepository.save(user);
         return "User registered";
     }

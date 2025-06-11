@@ -20,7 +20,7 @@ public class Appointment {
     @ManyToOne(fetch = FetchType.LAZY)
     private User patient;
     @ManyToOne(fetch = FetchType.LAZY)
-    private Specialist specialist;
+    private User specialist;
     @Enumerated(EnumType.STRING)
     private AppointmentStatus status;
 }

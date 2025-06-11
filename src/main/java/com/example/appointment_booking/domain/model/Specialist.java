@@ -1,8 +1,6 @@
 package com.example.appointment_booking.domain.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,6 +14,10 @@ public class Specialist {
     @Id
     @GeneratedValue
     private Long id;
-    private String name;
+
     private String specialization;
+
+    @OneToOne
+    @JoinColumn(name = "users_id")
+    private User user;
 }

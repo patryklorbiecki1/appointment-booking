@@ -8,13 +8,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -33,10 +32,18 @@ public class JwtFilter extends OncePerRequestFilter {
 
             if(username!=null && SecurityContextHolder.getContext().getAuthentication() == null){
                 Optional<User> userOptional = userRepository.findByUsername(username);
+
                 if(userOptional.isPresent() && jwtUtil.validateToken(token)){
+
                     User user = userOptional.get();
+                    UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
+                            .username(user.getUsername())
+                            .password("")
+                            .authorities("ROLE_" + user.getRole().name())
+                            .build();
+
                     UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                            user.getUsername(),null, List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
+                            userDetails, null, userDetails.getAuthorities()
                     );
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }

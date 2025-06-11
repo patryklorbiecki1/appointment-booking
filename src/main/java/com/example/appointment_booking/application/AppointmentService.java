@@ -1,11 +1,14 @@
 package com.example.appointment_booking.application;
 
+import com.example.appointment_booking.domain.exception.ForbiddenOperationException;
+import com.example.appointment_booking.domain.exception.SlotAlreadyTakenException;
+import com.example.appointment_booking.domain.exception.SpecialistNotFoundException;
 import com.example.appointment_booking.domain.model.Appointment;
 import com.example.appointment_booking.domain.model.AppointmentStatus;
-import com.example.appointment_booking.domain.model.Specialist;
+import com.example.appointment_booking.domain.model.Role;
 import com.example.appointment_booking.domain.model.User;
 import com.example.appointment_booking.domain.repository.AppointmentRepository;
-import com.example.appointment_booking.domain.repository.SpecialistRepository;
+import com.example.appointment_booking.domain.repository.UserRepository;
 import com.example.appointment_booking.web.dto.AppointmentRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,15 +18,19 @@ import org.springframework.stereotype.Service;
 public class AppointmentService {
 
     private final AppointmentRepository appointmentRepository;
-    private final SpecialistRepository specialistRepository;
+    private final UserRepository userRepository;
 
     public Appointment bookAppointment(AppointmentRequest request, User patient){
-        Specialist specialist = specialistRepository.findById(request.getSpecialistId())
-                .orElseThrow(()->new RuntimeException("Specialist not found"));
+        User specialist = userRepository.findById(request.getSpecialistId())
+                .orElseThrow(()-> new SpecialistNotFoundException("Specialist not found"));
+
+        if(patient.getRole()!= Role.PATIENT){
+            throw new ForbiddenOperationException("Only patients can book appointments");
+        }
 
         boolean isTaken = appointmentRepository.existsBySpecialistAndDateTime(specialist,request.getDateTime());
         if (isTaken) {
-            throw new RuntimeException("Appointment slot already taken");
+            throw new SlotAlreadyTakenException("This appointment slot is already taken");
         }
         Appointment appointment = new Appointment();
         appointment.setPatient(patient);
