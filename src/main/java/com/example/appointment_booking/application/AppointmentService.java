@@ -56,4 +56,20 @@ public class AppointmentService {
         appointment.setStatus(AppointmentStatus.CANCELLED);
         appointmentRepository.save(appointment);
     }
+
+    public void completeAppointment(Long id) {
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(()-> new AppointmentNotFoundException("Appointment not found"));
+        if(appointment.getStatus()!=AppointmentStatus.RESERVED){
+            throw new RuntimeException("Only a scheduled appointment can be completed");
+        }
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime appointmentEnd = appointment.getEndDateTime();
+
+        if(appointmentEnd.isAfter(now)){
+            throw new RuntimeException("It is not possible to mark an appointment as completed before it is completed");
+        }
+        appointment.setStatus(AppointmentStatus.COMPLETED);
+        appointmentRepository.save(appointment);
+    }
 }

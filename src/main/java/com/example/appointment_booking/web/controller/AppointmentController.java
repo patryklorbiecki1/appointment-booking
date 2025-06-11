@@ -38,4 +38,10 @@ public class AppointmentController {
         return ResponseEntity.ok("Appointment was cancelled");
     }
 
+    @PatchMapping("/{id}/complete")
+    public ResponseEntity<String> completeAppointment(@PathVariable Long id){
+        appointmentService.completeAppointment(id);
+        return ResponseEntity.ok("The appointment has been marked as completed");
+    }
+
 }
