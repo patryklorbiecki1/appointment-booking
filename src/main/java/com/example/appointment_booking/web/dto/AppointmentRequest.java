@@ -8,4 +8,5 @@ import java.time.LocalDateTime;
 public class AppointmentRequest {
     private Long specialistId;
     private LocalDateTime dateTime;
+    private Integer duration;
 }

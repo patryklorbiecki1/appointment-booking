@@ -15,12 +15,12 @@ public class Appointment {
     @Id
     @GeneratedValue
     private Long id;
-
-    private LocalDateTime dateTime;
+    private LocalDateTime startDateTime;
+    private LocalDateTime endDateTime;
     @ManyToOne(fetch = FetchType.LAZY)
     private User patient;
     @ManyToOne(fetch = FetchType.LAZY)
-    private User specialist;
+    private Specialist specialist;
     @Enumerated(EnumType.STRING)
     private AppointmentStatus status;
 }

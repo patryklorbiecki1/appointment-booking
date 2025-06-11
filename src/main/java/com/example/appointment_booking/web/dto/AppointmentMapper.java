@@ -8,8 +8,9 @@ public class AppointmentMapper {
 
     public AppointmentDto toDto(Appointment appointment){
         AppointmentDto dto = new AppointmentDto();
-        dto.setDateTime(appointment.getDateTime());
+        dto.setStartDateTime(appointment.getStartDateTime());
         dto.setSpecialistId(appointment.getId());
+        dto.setEndDateTime(appointment.getEndDateTime());
         return dto;
     }
 }
