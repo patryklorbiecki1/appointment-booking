@@ -1,5 +1,6 @@
 package com.example.appointment_booking.application;
 
+import com.example.appointment_booking.domain.exception.AppointmentNotFoundException;
 import com.example.appointment_booking.domain.exception.ForbiddenOperationException;
 import com.example.appointment_booking.domain.exception.SlotAlreadyTakenException;
 import com.example.appointment_booking.domain.exception.SpecialistNotFoundException;
@@ -9,6 +10,8 @@ import com.example.appointment_booking.domain.repository.SpecialistRepository;
 import com.example.appointment_booking.web.dto.AppointmentRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -38,5 +41,19 @@ public class AppointmentService {
         appointment.setStatus(AppointmentStatus.RESERVED);
 
         return appointmentRepository.save(appointment);
+    }
+
+    public void cancelAppointment(Long id) {
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(()-> new AppointmentNotFoundException("Appointment not found"));
+
+        if(appointment.getStatus()!=AppointmentStatus.RESERVED){
+            throw new RuntimeException("Only a scheduled visit can be cancelled");
+        }
+        if(appointment.getStartDateTime().isBefore(LocalDateTime.now())){
+            throw new RuntimeException("Cannot cancel past visit");
+        }
+        appointment.setStatus(AppointmentStatus.CANCELLED);
+        appointmentRepository.save(appointment);
     }
 }

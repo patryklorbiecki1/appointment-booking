@@ -12,10 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,8 +29,13 @@ public class AppointmentController {
         User user = userService.getCurrentUser(userDetails);
         Appointment booked = appointmentService.bookAppointment(request,user);
         AppointmentDto response = appointmentMapper.toDto(booked);
-
         return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<?> cancelAppointment(@PathVariable Long id){
+        appointmentService.cancelAppointment(id);
+        return ResponseEntity.ok("Appointment was cancelled");
     }
 
 }
