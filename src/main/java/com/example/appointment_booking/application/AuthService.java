@@ -37,7 +37,6 @@ public class AuthService {
             Specialist specialist = new Specialist();
             specialist.setSpecialization("");
             specialist.setUser(user);
-            user.setSpecialist(specialist);
         }
         userRepository.save(user);
         return "User registered";

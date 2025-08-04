@@ -1,9 +1,6 @@
 package com.example.appointment_booking.application;
 
-import com.example.appointment_booking.domain.exception.AppointmentNotFoundException;
-import com.example.appointment_booking.domain.exception.ForbiddenOperationException;
-import com.example.appointment_booking.domain.exception.SlotAlreadyTakenException;
-import com.example.appointment_booking.domain.exception.SpecialistNotFoundException;
+import com.example.appointment_booking.domain.exception.*;
 import com.example.appointment_booking.domain.model.*;
 import com.example.appointment_booking.domain.repository.AppointmentRepository;
 import com.example.appointment_booking.domain.repository.SpecialistRepository;
@@ -48,10 +45,10 @@ public class AppointmentService {
                 .orElseThrow(()-> new AppointmentNotFoundException("Appointment not found"));
 
         if(appointment.getStatus()!=AppointmentStatus.RESERVED){
-            throw new RuntimeException("Only a scheduled visit can be cancelled");
+            throw new InvalidAppointmentStatusException("Only a scheduled visit can be cancelled");
         }
         if(appointment.getStartDateTime().isBefore(LocalDateTime.now())){
-            throw new RuntimeException("Cannot cancel past visit");
+            throw new PastAppointmentCancellationException("Cannot cancel past visit");
         }
         appointment.setStatus(AppointmentStatus.CANCELLED);
         appointmentRepository.save(appointment);
