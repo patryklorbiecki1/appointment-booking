@@ -1,10 +1,7 @@
 package com.example.appointment_booking;
 
 import com.example.appointment_booking.application.AppointmentService;
-import com.example.appointment_booking.domain.exception.AppointmentNotFoundException;
-import com.example.appointment_booking.domain.exception.ForbiddenOperationException;
-import com.example.appointment_booking.domain.exception.SlotAlreadyTakenException;
-import com.example.appointment_booking.domain.exception.SpecialistNotFoundException;
+import com.example.appointment_booking.domain.exception.*;
 import com.example.appointment_booking.domain.model.*;
 import com.example.appointment_booking.domain.repository.AppointmentRepository;
 import com.example.appointment_booking.domain.repository.SpecialistRepository;
@@ -35,10 +32,10 @@ class AppointmentServiceTest {
     private AppointmentService appointmentService;
 
     @Test
-    void shouldBookAppointment_whenAllConditionsAreMet(){
+    void bookAppointment_shouldBookAppointment_whenAllConditionsAreMet(){
 
         User patient = createPatient();
-        Specialist specialist = createSpecialst();
+        Specialist specialist = createSpecialist();
 
         LocalDateTime dateTime = LocalDateTime.of(2025,8,10,10,0);
         AppointmentRequest request = createAppointmentRequest(specialist.getId(),dateTime,30);
@@ -60,7 +57,7 @@ class AppointmentServiceTest {
     }
 
     @Test
-    void shouldThrow_whenSpecialistNotFound(){
+    void bookAppointment_shouldThrow_whenSpecialistNotFound(){
         LocalDateTime dateTime = LocalDateTime.of(2025,8,10,10,0);
         AppointmentRequest request = createAppointmentRequest(99L,dateTime,60);
 
@@ -73,7 +70,7 @@ class AppointmentServiceTest {
     }
 
     @Test
-    void shouldThrow_whenUserIsNotPatient(){
+    void bookAppointment_shouldThrow_whenUserIsNotPatient(){
         LocalDateTime dateTime = LocalDateTime.of(2025,8,10,10,0);
         AppointmentRequest request = createAppointmentRequest(99L,dateTime,30);
 
@@ -87,13 +84,13 @@ class AppointmentServiceTest {
     }
 
     @Test
-    void shouldThrow_whenSlotIsTaken(){
+    void bookAppointment_shouldThrow_whenSlotIsTaken(){
         LocalDateTime dateTime = LocalDateTime.of(2025,8,10,10,0);
         AppointmentRequest request = createAppointmentRequest(1L,dateTime,30);
 
         User patient = createPatient();
 
-        Specialist specialist = createSpecialst();
+        Specialist specialist = createSpecialist();
 
         when(specialistRepository.findByUserId(1L)).thenReturn(Optional.of(specialist));
         when(appointmentRepository.hasConflict(eq(specialist),eq(dateTime),eq(dateTime.plusMinutes(30))))
@@ -153,7 +150,26 @@ class AppointmentServiceTest {
         verify(appointmentRepository).save(appointment);
     }
 
+    @Test
+    void completeAppointment_shouldThrow_whenIsNotReserved(){
+        Appointment appointment = new Appointment();
+        appointment.setStatus(AppointmentStatus.COMPLETED);
+        when(appointmentRepository.findById(1L)).thenReturn(Optional.of(appointment));
+        assertThrows(InvalidAppointmentStatusException.class, ()->
+                appointmentService.completeAppointment(1L));
+    }
 
+    @Test
+    void completeAppointment_shouldThrow_whenAppointmentIsInFuture(){
+        Appointment appointment = new Appointment();
+        appointment.setId(1L);
+        appointment.setStatus(AppointmentStatus.RESERVED);
+        appointment.setEndDateTime(LocalDateTime.now().plusMinutes(30));
+
+        when(appointmentRepository.findById(1L)).thenReturn(Optional.of(appointment));
+        assertThrows(InvalidAppointmentStatusException.class,()->
+                appointmentService.completeAppointment(1L));
+    }
     private User createPatient(){
         User patient = new User();
         patient.setId(2L);
@@ -168,7 +184,7 @@ class AppointmentServiceTest {
         user.setRole(Role.SPECIALIST);
         return user;
     }
-    private Specialist createSpecialst(){
+    private Specialist createSpecialist(){
         Specialist specialist = new Specialist();
         specialist.setId(1L);
         specialist.setUser(createSpecialistUser());
