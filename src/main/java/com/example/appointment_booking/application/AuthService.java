@@ -4,6 +4,7 @@ import com.example.appointment_booking.config.security.JwtUtil;
 import com.example.appointment_booking.domain.exception.UsernameAlreadyExistsException;
 import com.example.appointment_booking.domain.model.Role;
 import com.example.appointment_booking.domain.model.Specialist;
+import com.example.appointment_booking.domain.repository.SpecialistRepository;
 import com.example.appointment_booking.web.dto.AuthResponse;
 import com.example.appointment_booking.web.dto.LoginRequest;
 import com.example.appointment_booking.web.dto.RegisterRequest;
@@ -21,6 +22,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AuthService {
     private final UserRepository userRepository;
+    private final SpecialistRepository specialistRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
@@ -37,6 +39,7 @@ public class AuthService {
             Specialist specialist = new Specialist();
             specialist.setSpecialization("");
             specialist.setUser(user);
+            specialistRepository.save(specialist);
         }
         userRepository.save(user);
         return "User registered";
