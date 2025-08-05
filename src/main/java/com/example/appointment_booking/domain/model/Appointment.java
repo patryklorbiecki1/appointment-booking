@@ -23,4 +23,6 @@ public class Appointment {
     private Specialist specialist;
     @Enumerated(EnumType.STRING)
     private AppointmentStatus status;
+    @OneToOne(mappedBy = "appointment", cascade = CascadeType.ALL)
+    private VisitNote visitNote;
 }

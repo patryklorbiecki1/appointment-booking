@@ -11,6 +11,7 @@ public class AppointmentMapper {
         dto.setStartDateTime(appointment.getStartDateTime());
         dto.setSpecialistId(appointment.getId());
         dto.setEndDateTime(appointment.getEndDateTime());
+        dto.setVisitNoteContent(appointment.getVisitNote().getContent());
         return dto;
     }
 }

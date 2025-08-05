@@ -6,6 +6,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.Base64;
@@ -51,6 +52,10 @@ public class JwtUtil {
         }catch (JwtException | IllegalArgumentException e){
             return false;
         }
+    }
+
+    public static String getCurrentUsername(){
+        return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
 }
