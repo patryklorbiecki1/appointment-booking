@@ -16,12 +16,12 @@ pipeline {
 		stage('Build') {
 			steps{
 				sh 'chmod +x gradlew'
-				sh './gradlew clean build --no-deamon'
+				sh './gradlew clean build --no-daemon'
 			}
 		}
 		stage('Test'){
 			steps{
-				sh './gradlew test --no-deamon'
+				sh './gradlew test --no-daemon'
 			}
 		}
 	}
