@@ -8,6 +8,8 @@ import com.example.appointment_booking.domain.model.Specialist;
 import com.example.appointment_booking.domain.model.User;
 import com.example.appointment_booking.domain.repository.SpecialistRepository;
 import com.example.appointment_booking.domain.repository.UserRepository;
+import com.example.appointment_booking.web.dto.AuthResponse;
+import com.example.appointment_booking.web.dto.LoginRequest;
 import com.example.appointment_booking.web.dto.RegisterRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +17,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
@@ -97,6 +101,36 @@ public class AuthServiceTest {
         assertEquals(savedUser,savedSpecialist.getUser());
         assertEquals("",savedSpecialist.getSpecialization());
         assertEquals("User registered",result);
+    }
+
+    @Test
+    void login_shouldReturnToken_whenCredentialsAreCorrect(){
+        LoginRequest request = new LoginRequest();
+        request.setUsername("adam");
+        request.setPassword("secret");
+        User user = new User(1L,"adam","hashed",Role.PATIENT);
+
+        when(userRepository.findByUsername("adam")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("secret","hashed")).thenReturn(true);
+        when(jwtUtil.generateToken("adam")).thenReturn("mocked_jwt_token");
+
+        ResponseEntity<AuthResponse> response = authService.login(request);
+        assertEquals(HttpStatus.OK,response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("mocked_jwt_token",response.getBody().getToken());
+    }
+
+    @Test
+    void login_shouldReturn401_whenUserNotFound(){
+        LoginRequest request = new LoginRequest();
+        request.setUsername("adam");
+        request.setPassword("secret");
+
+        when(userRepository.findByUsername("adam")).thenReturn(Optional.empty());
+
+        ResponseEntity<AuthResponse> response = authService.login(request);
+        assertEquals(HttpStatus.UNAUTHORIZED,response.getStatusCode());
+        assertNull(response.getBody());
     }
 
 }
