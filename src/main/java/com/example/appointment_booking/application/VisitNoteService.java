@@ -76,6 +76,6 @@ public class VisitNoteService {
     private boolean isUserAuthorizedForAppointment(User user, Appointment appointment) {
         Long userId = user.getId();
         return userId.equals(appointment.getPatient().getId()) ||
-                userId.equals(appointment.getSpecialist().getId());
+                userId.equals(appointment.getSpecialist().getUser().getId());
     }
 }
