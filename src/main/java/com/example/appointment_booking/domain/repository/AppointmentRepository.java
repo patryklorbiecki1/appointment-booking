@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 public interface AppointmentRepository extends JpaRepository<Appointment,Long> {
@@ -19,4 +20,11 @@ public interface AppointmentRepository extends JpaRepository<Appointment,Long> {
     boolean hasConflict(@Param("specialist") Specialist specialist,
                         @Param("newStart") LocalDateTime newStart,
                         @Param("newEnd") LocalDateTime newEnd);
+
+    @Query("SELECT a FROM Appointment a " +
+            "WHERE a.specialist.id = :specialistId " +
+            "AND a.status = 'RESERVED'" +
+            "AND a.startDateTime >= CURRENT_TIMESTAMP " +
+            "ORDER BY a.startDateTime")
+    List<Appointment> findUpcomingAppointmentsForSpecialist(@Param("specialistId") Long specialistId);
 }

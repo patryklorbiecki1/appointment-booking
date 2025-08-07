@@ -7,6 +7,7 @@ import com.example.appointment_booking.domain.repository.SpecialistRepository;
 import com.example.appointment_booking.web.dto.AppointmentRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.time.LocalDateTime;
 

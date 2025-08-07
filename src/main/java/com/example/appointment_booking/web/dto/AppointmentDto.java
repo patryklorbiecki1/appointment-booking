@@ -8,5 +8,6 @@ public class AppointmentDto {
         private Long specialistId;
         private LocalDateTime startDateTime;
         private LocalDateTime endDateTime;
+        private String patientName;
         private String visitNoteContent;
 }

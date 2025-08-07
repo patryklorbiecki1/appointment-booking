@@ -2,6 +2,7 @@ package com.example.appointment_booking.web.controller;
 
 
 import com.example.appointment_booking.application.AppointmentService;
+import com.example.appointment_booking.application.SpecialistService;
 import com.example.appointment_booking.application.UserService;
 import com.example.appointment_booking.domain.model.Appointment;
 import com.example.appointment_booking.domain.model.User;
@@ -10,9 +11,12 @@ import com.example.appointment_booking.web.dto.AppointmentRequest;
 import com.example.appointment_booking.web.dto.AppointmentDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,6 +26,7 @@ public class AppointmentController {
     private final AppointmentService appointmentService;
     private final UserService userService;
     private final AppointmentMapper appointmentMapper;
+    private final SpecialistService specialistService;
 
     @PostMapping
     public ResponseEntity<?> bookAppointment(@RequestBody AppointmentRequest request,
@@ -44,4 +49,9 @@ public class AppointmentController {
         return ResponseEntity.ok("The appointment has been marked as completed");
     }
 
+    @GetMapping("/specialist/upcoming")
+    @PreAuthorize("hasRole('SPECIALIST')")
+    public List<AppointmentDto> getUpcomingAppointments(){
+        return specialistService.getUpcomingAppointmentsForSpecialist();
+    }
 }
