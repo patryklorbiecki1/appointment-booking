@@ -90,7 +90,7 @@ Response: 200 OK
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/your-repo/appointment-booking.git
+git clone https://github.com/patryklorbiecki1/appointment-booking.git
 ```
 
 2. Run the project in your IDE (e.g., IntelliJ) or using:
